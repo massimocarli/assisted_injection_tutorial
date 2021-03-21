@@ -1,3 +1,4 @@
 <resources>
   <string name="app_name">AssistedGallery</string>
+  <string name="main_screen_image">Main Screen Image</string>
 </resources>

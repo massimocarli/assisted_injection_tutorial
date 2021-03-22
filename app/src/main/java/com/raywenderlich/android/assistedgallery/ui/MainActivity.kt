@@ -42,11 +42,8 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.raywenderlich.android.assistedgallery.R
 import com.raywenderlich.android.assistedgallery.bitmap.ImageLoader
-import com.raywenderlich.android.assistedgallery.bitmap.fetcher.BitmapFetcher
 import com.raywenderlich.android.assistedgallery.bitmap.strategies.imageurl.ImageUrlStrategy
-import com.raywenderlich.android.assistedgallery.di.Schedulers
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -57,15 +54,7 @@ import kotlin.coroutines.CoroutineContext
 class MainActivity : AppCompatActivity(), CoroutineScope, LifecycleObserver {
 
   @Inject
-  @Schedulers.IO
-  lateinit var bgDispatcher: CoroutineDispatcher
-
-  @Inject
-  @Schedulers.Main
-  lateinit var mainDispatcher: CoroutineDispatcher
-
-  @Inject
-  lateinit var bitmapFetcher: BitmapFetcher
+  lateinit var imageLoader: ImageLoader
 
   @Inject
   lateinit var imageUrlStrategy: ImageUrlStrategy
@@ -87,12 +76,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope, LifecycleObserver {
   @OnLifecycleEvent(ON_START)
   fun loadImage() {
     launch {
-      ImageLoader(
-        bitmapFetcher,
-        bgDispatcher,
-        mainDispatcher
-      )
-        .loadImage(imageUrlStrategy(), mainImage)
+      imageLoader.loadImage(imageUrlStrategy(), mainImage)
     }
   }
 

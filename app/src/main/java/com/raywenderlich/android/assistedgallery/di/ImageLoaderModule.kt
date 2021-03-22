@@ -35,52 +35,26 @@
 
 package com.raywenderlich.android.assistedgallery.di
 
+import com.raywenderlich.android.assistedgallery.bitmap.ImageLoader
 import com.raywenderlich.android.assistedgallery.bitmap.fetcher.BitmapFetcher
-import com.raywenderlich.android.assistedgallery.bitmap.fetcher.BitmapFetcherImpl
-import com.raywenderlich.android.assistedgallery.bitmap.strategies.imageurl.ImageUrlStrategy
-import com.raywenderlich.android.assistedgallery.bitmap.strategies.imageurl.PlaceImgUrlStrategy
-import com.raywenderlich.android.assistedgallery.bitmap.strategies.size.ScreenSizeStrategy
-import com.raywenderlich.android.assistedgallery.bitmap.strategies.size.SizeStrategy
-import com.raywenderlich.android.assistedgallery.di.ApplicationModule.Bindings
-import com.raywenderlich.android.assistedgallery.di.Schedulers.IO
-import com.raywenderlich.android.assistedgallery.di.Schedulers.Main
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.android.components.ActivityComponent
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 
-@Module(includes = arrayOf(Bindings::class))
-@InstallIn(ApplicationComponent::class)
-object ApplicationModule {
-
-  @Provides
-  @IO
-  fun ioScheduler(): CoroutineDispatcher = Dispatchers.IO
+@Module
+@InstallIn(ActivityComponent::class)
+object ImageLoaderModule {
 
   @Provides
-  @Main
-  fun uiScheduler(): CoroutineDispatcher = Dispatchers.Main
-
-  @Module
-  @InstallIn(ApplicationComponent::class)
-  interface Bindings {
-
-    @Binds
-    fun bindBitmapFetcher(
-      impl: BitmapFetcherImpl
-    ): BitmapFetcher
-
-    @Binds
-    fun bindSizeStrategy(
-      impl: ScreenSizeStrategy
-    ): SizeStrategy
-
-    @Binds
-    fun bindImageUrlStrategy(
-      impl: PlaceImgUrlStrategy
-    ): ImageUrlStrategy
-  }
+  fun provideImageLoader(
+    @Schedulers.IO bgDispatcher: CoroutineDispatcher,
+    @Schedulers.Main mainDispatcher: CoroutineDispatcher,
+    bitmapFetcher: BitmapFetcher
+  ): ImageLoader = ImageLoader(
+    bitmapFetcher,
+    bgDispatcher,
+    mainDispatcher
+  )
 }

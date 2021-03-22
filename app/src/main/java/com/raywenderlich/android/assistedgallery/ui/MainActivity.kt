@@ -43,7 +43,7 @@ import androidx.lifecycle.OnLifecycleEvent
 import com.raywenderlich.android.assistedgallery.R
 import com.raywenderlich.android.assistedgallery.bitmap.ImageLoader
 import com.raywenderlich.android.assistedgallery.bitmap.fetcher.BitmapFetcher
-import com.raywenderlich.android.assistedgallery.bitmap.strategies.imageurl.PlaceImgUrlStrategy
+import com.raywenderlich.android.assistedgallery.bitmap.strategies.imageurl.ImageUrlStrategy
 import com.raywenderlich.android.assistedgallery.di.Schedulers
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineDispatcher
@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope, LifecycleObserver {
   lateinit var bitmapFetcher: BitmapFetcher
 
   @Inject
-  lateinit var imageUrlStrategy: PlaceImgUrlStrategy
+  lateinit var imageUrlStrategy: ImageUrlStrategy
 
   lateinit var mainImage: ImageView
 
@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope, LifecycleObserver {
       ImageLoader(
         bitmapFetcher,
         bgDispatcher,
-        mainDispatcher /*, imageFilter = GrayScaleImageFilter()*/
+        mainDispatcher
       )
         .loadImage(imageUrlStrategy(), mainImage)
     }

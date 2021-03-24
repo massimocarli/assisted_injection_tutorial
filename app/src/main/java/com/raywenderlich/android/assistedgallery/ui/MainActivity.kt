@@ -41,7 +41,8 @@ import androidx.lifecycle.Lifecycle.Event.ON_START
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.raywenderlich.android.assistedgallery.R
-import com.raywenderlich.android.assistedgallery.bitmap.ImageLoader
+import com.raywenderlich.android.assistedgallery.bitmap.ImageLoaderFactory
+import com.raywenderlich.android.assistedgallery.bitmap.filter.GrayScaleImageFilter
 import com.raywenderlich.android.assistedgallery.bitmap.strategies.imageurl.ImageUrlStrategy
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -54,7 +55,7 @@ import kotlin.coroutines.CoroutineContext
 class MainActivity : AppCompatActivity(), CoroutineScope, LifecycleObserver {
 
   @Inject
-  lateinit var imageLoader: ImageLoader
+  lateinit var imageLoaderFactory: ImageLoaderFactory
 
   @Inject
   lateinit var imageUrlStrategy: ImageUrlStrategy
@@ -76,7 +77,9 @@ class MainActivity : AppCompatActivity(), CoroutineScope, LifecycleObserver {
   @OnLifecycleEvent(ON_START)
   fun loadImage() {
     launch {
-      imageLoader.loadImage(imageUrlStrategy(), mainImage)
+      imageLoaderFactory
+        .create(R.drawable.loading_animation_drawable, GrayScaleImageFilter())
+        .loadImage(imageUrlStrategy(), mainImage)
     }
   }
 

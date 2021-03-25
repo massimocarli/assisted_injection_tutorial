@@ -49,11 +49,11 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 
 class ImageLoader @AssistedInject constructor(
-  @Assisted private val bitmapFetcher: BitmapFetcher,
-  @Assisted @Schedulers.IO private val bgDispatcher: CoroutineDispatcher,
-  @Assisted @Schedulers.Main private val uiDispatcher: CoroutineDispatcher,
-  @DrawableRes private val loadingDrawableId: Int = R.drawable.loading_animation_drawable,
-  private val imageFilter: ImageFilter = NoOpImageFilter
+  private val bitmapFetcher: BitmapFetcher,
+  @Schedulers.IO private val bgDispatcher: CoroutineDispatcher,
+  @Schedulers.Main private val uiDispatcher: CoroutineDispatcher,
+  @Assisted @DrawableRes private val loadingDrawableId: Int = R.drawable.loading_animation_drawable,
+  @Assisted private val imageFilter: ImageFilter = NoOpImageFilter
 ) {
 
   suspend fun loadImage(imageUrl: String, into: ImageView) =

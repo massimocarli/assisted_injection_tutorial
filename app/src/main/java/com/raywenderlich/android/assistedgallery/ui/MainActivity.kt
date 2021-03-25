@@ -34,6 +34,7 @@
  */
 package com.raywenderlich.android.assistedgallery.ui
 
+//import com.raywenderlich.android.assistedgallery.bitmap.ImageLoaderFactory
 import android.os.Bundle
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
@@ -41,9 +42,7 @@ import androidx.lifecycle.Lifecycle.Event.ON_START
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.raywenderlich.android.assistedgallery.R
-//import com.raywenderlich.android.assistedgallery.bitmap.ImageLoaderFactory
 import com.raywenderlich.android.assistedgallery.bitmap.filter.GrayScaleImageFilter
-import com.raywenderlich.android.assistedgallery.bitmap.filter.NoOpImageFilter
 import com.raywenderlich.android.assistedgallery.bitmap.strategies.imageurl.ImageUrlStrategy
 import com.raywenderlich.android.assistedgallery.di.ImageLoaderFactory
 import dagger.hilt.android.AndroidEntryPoint
@@ -80,7 +79,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope, LifecycleObserver {
   fun loadImage() {
     launch {
       imageLoaderFactory
-        .create(R.drawable.loading_animation_drawable, GrayScaleImageFilter())
+        .createImageLoader(imageFilter = GrayScaleImageFilter())
         .loadImage(imageUrlStrategy(), mainImage)
     }
   }

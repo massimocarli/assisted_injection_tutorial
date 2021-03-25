@@ -35,7 +35,6 @@
 
 package com.raywenderlich.android.assistedgallery.ui.viewmodel
 
-import androidx.lifecycle.SavedStateHandle
 import com.raywenderlich.android.assistedgallery.bitmap.filter.ImageFilter
 import dagger.assisted.AssistedFactory
 
@@ -43,7 +42,6 @@ import dagger.assisted.AssistedFactory
 interface ImageLoaderViewModelFactory {
 
   fun create(
-    savedStateHandle: SavedStateHandle,
     imageFilter: ImageFilter
   ): ImageLoaderViewModel
 }

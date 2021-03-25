@@ -62,8 +62,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope, LifecycleObserver {
   private val imageLoaderViewModel: ImageLoaderViewModel by viewModels {
     ImageLoaderViewModel.provideFactory(
       imageLoaderViewModelFactory,
-      this,
-      Bundle(),
       GrayScaleImageFilter()
     )
   }

@@ -36,12 +36,9 @@
 package com.raywenderlich.android.assistedgallery.ui.viewmodel
 
 import android.graphics.Bitmap
-import android.os.Bundle
 import androidx.lifecycle.*
-import androidx.savedstate.SavedStateRegistryOwner
 import com.raywenderlich.android.assistedgallery.bitmap.fetcher.BitmapFetcher
 import com.raywenderlich.android.assistedgallery.bitmap.filter.ImageFilter
-import com.raywenderlich.android.assistedgallery.bitmap.strategies.imageurl.ImageUrlStrategy
 import com.raywenderlich.android.assistedgallery.di.Schedulers
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -50,9 +47,7 @@ import kotlinx.coroutines.launch
 
 class ImageLoaderViewModel @AssistedInject constructor(
   private val bitmapFetcher: BitmapFetcher,
-  private val imageUrlStrategy: ImageUrlStrategy,
   @Schedulers.IO private val bgDispatcher: CoroutineDispatcher,
-  @Assisted private val savedStateHandle: SavedStateHandle,
   @Assisted private val imageFilter: ImageFilter
 ) : ViewModel() {
 
@@ -71,18 +66,12 @@ class ImageLoaderViewModel @AssistedInject constructor(
   companion object {
     fun provideFactory(
       assistedFactory: ImageLoaderViewModelFactory,
-      owner: SavedStateRegistryOwner,
-      defaultArgs: Bundle? = null,
       imageFilter: ImageFilter
-    ): AbstractSavedStateViewModelFactory =
-      object : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(
-          key: String,
-          modelClass: Class<T>,
-          handle: SavedStateHandle
-        ): T {
-          return assistedFactory.create(handle, imageFilter) as T
+    ): ViewModelProvider.Factory =
+      object : ViewModelProvider.Factory {
+
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+          return assistedFactory.create(imageFilter) as T
         }
       }
   }

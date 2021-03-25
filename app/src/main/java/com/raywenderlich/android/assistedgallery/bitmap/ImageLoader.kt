@@ -38,21 +38,20 @@ package com.raywenderlich.android.assistedgallery.bitmap
 import android.widget.ImageView
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
-import com.google.auto.factory.AutoFactory
-import com.google.auto.factory.Provided
 import com.raywenderlich.android.assistedgallery.R
 import com.raywenderlich.android.assistedgallery.bitmap.fetcher.BitmapFetcher
 import com.raywenderlich.android.assistedgallery.bitmap.filter.ImageFilter
 import com.raywenderlich.android.assistedgallery.bitmap.filter.NoOpImageFilter
 import com.raywenderlich.android.assistedgallery.di.Schedulers
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 
-@AutoFactory
-class ImageLoader constructor(
-  @Provided private val bitmapFetcher: BitmapFetcher,
-  @Provided @Schedulers.IO private val bgDispatcher: CoroutineDispatcher,
-  @Provided @Schedulers.Main private val uiDispatcher: CoroutineDispatcher,
+class ImageLoader @AssistedInject constructor(
+  @Assisted private val bitmapFetcher: BitmapFetcher,
+  @Assisted @Schedulers.IO private val bgDispatcher: CoroutineDispatcher,
+  @Assisted @Schedulers.Main private val uiDispatcher: CoroutineDispatcher,
   @DrawableRes private val loadingDrawableId: Int = R.drawable.loading_animation_drawable,
   private val imageFilter: ImageFilter = NoOpImageFilter
 ) {

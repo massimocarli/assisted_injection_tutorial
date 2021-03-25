@@ -32,59 +32,21 @@
  *  THE SOFTWARE.
  *
  */
-package com.raywenderlich.android.assistedgallery.ui
 
-import android.os.Bundle
-import android.widget.ImageView
-import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Lifecycle.Event.ON_START
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
+package com.raywenderlich.android.assistedgallery.di
+
+import androidx.annotation.DrawableRes
 import com.raywenderlich.android.assistedgallery.R
-//import com.raywenderlich.android.assistedgallery.bitmap.ImageLoaderFactory
-import com.raywenderlich.android.assistedgallery.bitmap.filter.GrayScaleImageFilter
+import com.raywenderlich.android.assistedgallery.bitmap.ImageLoader
+import com.raywenderlich.android.assistedgallery.bitmap.filter.ImageFilter
 import com.raywenderlich.android.assistedgallery.bitmap.filter.NoOpImageFilter
-import com.raywenderlich.android.assistedgallery.bitmap.strategies.imageurl.ImageUrlStrategy
-import com.raywenderlich.android.assistedgallery.di.ImageLoaderFactory
-import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import javax.inject.Inject
-import kotlin.coroutines.CoroutineContext
+import dagger.assisted.AssistedFactory
 
-@AndroidEntryPoint
-class MainActivity : AppCompatActivity(), CoroutineScope, LifecycleObserver {
+@AssistedFactory
+interface ImageLoaderFactory {
 
-  @Inject
-  lateinit var imageLoaderFactory: ImageLoaderFactory
-
-  @Inject
-  lateinit var imageUrlStrategy: ImageUrlStrategy
-
-  lateinit var mainImage: ImageView
-
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_main)
-    mainImage = findViewById<ImageView>(R.id.main_image).apply {
-      setOnLongClickListener {
-        loadImage()
-        true
-      }
-    }
-    lifecycle.addObserver(this)
-  }
-
-  @OnLifecycleEvent(ON_START)
-  fun loadImage() {
-    launch {
-      imageLoaderFactory
-        .create(R.drawable.loading_animation_drawable, GrayScaleImageFilter())
-        .loadImage(imageUrlStrategy(), mainImage)
-    }
-  }
-
-  override val coroutineContext: CoroutineContext
-    get() = Dispatchers.Main
+  fun createImageLoader(
+    @DrawableRes loadingDrawableId: Int = R.drawable.loading_animation_drawable,
+    imageFilter: ImageFilter = NoOpImageFilter
+  ): ImageLoader
 }

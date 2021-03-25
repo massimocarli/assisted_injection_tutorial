@@ -33,10 +33,12 @@
  *
  */
 
-package com.raywenderlich.android.assistedgallery.ui.viewmodel
+package com.raywenderlich.android.assistedgallery.ui.viewmodels
 
-import android.graphics.Bitmap
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.raywenderlich.android.assistedgallery.bitmap.fetcher.BitmapFetcher
 import com.raywenderlich.android.assistedgallery.bitmap.filter.ImageFilter
 import com.raywenderlich.android.assistedgallery.di.Schedulers
@@ -48,31 +50,20 @@ import kotlinx.coroutines.launch
 class ImageLoaderViewModel @AssistedInject constructor(
   private val bitmapFetcher: BitmapFetcher,
   @Schedulers.IO private val bgDispatcher: CoroutineDispatcher,
-  @Assisted private val imageFilter: ImageFilter
+  @Assisted private val imageFilter: ImageFilter,
+  @Assisted private val loadingDrawableId: Int
 ) : ViewModel() {
 
-  private val _bitmapLiveData = MutableLiveData<Bitmap>()
-  val bitmapLiveData: LiveData<Bitmap>
+  private val _bitmapLiveData = MutableLiveData<ImageLoaderEvents>()
+  val bitmapLiveData: LiveData<ImageLoaderEvents>
     get() = _bitmapLiveData
 
   fun loadImage(imageUrl: String) {
     viewModelScope.launch(bgDispatcher) {
+      _bitmapLiveData.postValue(DrawableEvent(loadingDrawableId))
       val bitmap = bitmapFetcher.fetchImage(imageUrl)
       val filteredBitmap = imageFilter.transform(bitmap)
-      _bitmapLiveData.postValue(filteredBitmap)
+      _bitmapLiveData.postValue(BitmapEvent(filteredBitmap))
     }
-  }
-
-  companion object {
-    fun provideFactory(
-      assistedFactory: ImageLoaderViewModelFactory,
-      imageFilter: ImageFilter
-    ): ViewModelProvider.Factory =
-      object : ViewModelProvider.Factory {
-
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-          return assistedFactory.create(imageFilter) as T
-        }
-      }
   }
 }

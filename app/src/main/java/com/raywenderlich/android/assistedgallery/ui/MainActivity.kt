@@ -39,14 +39,14 @@ import android.os.Bundle
 import android.widget.ImageView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle.Event.ON_START
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.raywenderlich.android.assistedgallery.R
 import com.raywenderlich.android.assistedgallery.bitmap.filter.GrayScaleImageFilter
 import com.raywenderlich.android.assistedgallery.bitmap.strategies.imageurl.ImageUrlStrategy
-import com.raywenderlich.android.assistedgallery.ui.viewmodel.ImageLoaderViewModel
-import com.raywenderlich.android.assistedgallery.ui.viewmodel.ImageLoaderViewModelFactory
+import com.raywenderlich.android.assistedgallery.ui.viewmodels.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope, LifecycleObserver {
   lateinit var imageLoaderViewModelFactory: ImageLoaderViewModelFactory
 
   private val imageLoaderViewModel: ImageLoaderViewModel by viewModels {
-    ImageLoaderViewModel.provideFactory(
+    provideFactory(
       imageLoaderViewModelFactory,
       GrayScaleImageFilter()
     )
@@ -81,10 +81,18 @@ class MainActivity : AppCompatActivity(), CoroutineScope, LifecycleObserver {
       }
     }
     lifecycle.addObserver(this)
-    imageLoaderViewModel.bitmapLiveData.observe(this) { bitmap ->
+    imageLoaderViewModel.bitmapLiveData.observe(this) { event ->
       with(mainImage) {
-        scaleType = ImageView.ScaleType.FIT_XY
-        setImageBitmap(bitmap)
+        when (event) {
+          is DrawableEvent -> {
+            scaleType = ImageView.ScaleType.CENTER_INSIDE
+            setImageDrawable(ContextCompat.getDrawable(this@MainActivity, event.drawableId))
+          }
+          is BitmapEvent -> {
+            scaleType = ImageView.ScaleType.FIT_XY
+            setImageBitmap(event.bitmap)
+          }
+        }
       }
     }
   }

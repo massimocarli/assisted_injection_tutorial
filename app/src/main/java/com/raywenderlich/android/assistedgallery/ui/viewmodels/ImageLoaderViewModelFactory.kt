@@ -33,15 +33,32 @@
  *
  */
 
-package com.raywenderlich.android.assistedgallery.ui.viewmodel
+package com.raywenderlich.android.assistedgallery.ui.viewmodels
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.raywenderlich.android.assistedgallery.R
 import com.raywenderlich.android.assistedgallery.bitmap.filter.ImageFilter
+import com.raywenderlich.android.assistedgallery.bitmap.filter.NoOpImageFilter
 import dagger.assisted.AssistedFactory
 
 @AssistedFactory
 interface ImageLoaderViewModelFactory {
 
   fun create(
-    imageFilter: ImageFilter
+    imageFilter: ImageFilter = NoOpImageFilter,
+    loadingDrawableId: Int = R.drawable.loading_animation_drawable
   ): ImageLoaderViewModel
 }
+
+fun provideFactory(
+  assistedFactory: ImageLoaderViewModelFactory,
+  imageFilter: ImageFilter = NoOpImageFilter,
+  loadingDrawableId: Int = R.drawable.loading_animation_drawable
+): ViewModelProvider.Factory =
+  object : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+      return assistedFactory.create(imageFilter, loadingDrawableId) as T
+    }
+  }

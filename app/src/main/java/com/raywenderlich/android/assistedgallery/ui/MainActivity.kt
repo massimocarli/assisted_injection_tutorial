@@ -37,6 +37,7 @@ package com.raywenderlich.android.assistedgallery.ui
 //import com.raywenderlich.android.assistedgallery.bitmap.ImageLoaderFactory
 import android.os.Bundle
 import android.widget.ImageView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle.Event.ON_START
 import androidx.lifecycle.LifecycleObserver
@@ -44,11 +45,11 @@ import androidx.lifecycle.OnLifecycleEvent
 import com.raywenderlich.android.assistedgallery.R
 import com.raywenderlich.android.assistedgallery.bitmap.filter.GrayScaleImageFilter
 import com.raywenderlich.android.assistedgallery.bitmap.strategies.imageurl.ImageUrlStrategy
-import com.raywenderlich.android.assistedgallery.di.ImageLoaderFactory
+import com.raywenderlich.android.assistedgallery.ui.viewmodel.ImageLoaderViewModel
+import com.raywenderlich.android.assistedgallery.ui.viewmodel.ImageLoaderViewModelFactory
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
@@ -56,7 +57,16 @@ import kotlin.coroutines.CoroutineContext
 class MainActivity : AppCompatActivity(), CoroutineScope, LifecycleObserver {
 
   @Inject
-  lateinit var imageLoaderFactory: ImageLoaderFactory
+  lateinit var imageLoaderViewModelFactory: ImageLoaderViewModelFactory
+
+  private val imageLoaderViewModel: ImageLoaderViewModel by viewModels {
+    ImageLoaderViewModel.provideFactory(
+      imageLoaderViewModelFactory,
+      this,
+      Bundle(),
+      GrayScaleImageFilter()
+    )
+  }
 
   @Inject
   lateinit var imageUrlStrategy: ImageUrlStrategy
@@ -73,15 +83,17 @@ class MainActivity : AppCompatActivity(), CoroutineScope, LifecycleObserver {
       }
     }
     lifecycle.addObserver(this)
+    imageLoaderViewModel.bitmapLiveData.observe(this) { bitmap ->
+      with(mainImage) {
+        scaleType = ImageView.ScaleType.FIT_XY
+        setImageBitmap(bitmap)
+      }
+    }
   }
 
   @OnLifecycleEvent(ON_START)
   fun loadImage() {
-    launch {
-      imageLoaderFactory
-        .createImageLoader(imageFilter = GrayScaleImageFilter())
-        .loadImage(imageUrlStrategy(), mainImage)
-    }
+    imageLoaderViewModel.loadImage(imageUrlStrategy())
   }
 
   override val coroutineContext: CoroutineContext

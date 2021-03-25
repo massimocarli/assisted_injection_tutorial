@@ -47,6 +47,9 @@ dependencies {
 
   implementation "com.google.dagger:hilt-android:$hilt_android_version"
   kapt "com.google.dagger:hilt-android-compiler:$hilt_android_version"
+  implementation "androidx.hilt:hilt-lifecycle-viewmodel:$viewmodel_hilt_version"
+  implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1"
+  implementation "androidx.activity:activity-ktx:1.2.2"
 
   testImplementation 'junit:junit:4.13.2'
   androidTestImplementation 'androidx.test.ext:junit:1.1.2'
